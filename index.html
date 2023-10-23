@@ -1,10 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
     <div class="repl">
         <div class="output" id="output"></div>
@@ -12,23 +15,24 @@
     </div>
     <script>
         const input = document.getElementById('input');
-const output = document.getElementById('output');
+        const output = document.getElementById('output');
 
-input.addEventListener('keydown', function (e) {
-    if (e.key === 'Enter') {
-        const command = input.value;
-        input.value = '';
-        output.innerHTML += `<p>> ${command}</p>`;
-        
-        try {
-            const result = eval(command);
-            output.innerHTML += `<p>${result}</p>`;
-        } catch (error) {
-            output.innerHTML += `<p class="error">${error.message}</p>`;
-        }
-    }
-});
+        input.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter') {
+                const command = input.value;
+                input.value = '';
+                output.innerHTML += `<p>> ${command}</p>`;
+
+                try {
+                    const result = eval(command);
+                    output.innerHTML += `<p>${result}</p>`;
+                } catch (error) {
+                    output.innerHTML += `<p class="error">${error.message}</p>`;
+                }
+            }
+        });
 
     </script>
 </body>
+
 </html>

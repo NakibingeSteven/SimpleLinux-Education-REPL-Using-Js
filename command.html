@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Linux Command REPL</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="repl">
+        <div class="output" id="output"></div>
+        <input type="text" id="input" class="input" autofocus>
+    </div>
+    <script>
+        const input = document.getElementById('input');
+        const output = document.getElementById('output');
+
+        // Create a file system object
+        const fileSystem = {
+            currentDirectory: '/',
+            folders: {
+                '/': {
+                    subfolders: {},
+                    textFiles: [],
+                    imageFiles: [],
+                },
+            },
+        };
+
+        // Function to create a new text file
+        function touch(fileName) {
+            const currentFolder = fileSystem.folders[fileSystem.currentDirectory];
+            currentFolder.textFiles.push(fileName);
+        }
+
+        // Function to remove a folder or subfolder
+        function rmdir(folderName) {
+            const currentFolder = fileSystem.folders[fileSystem.currentDirectory];
+            if (currentFolder.subfolders.hasOwnProperty(folderName)) {
+                delete currentFolder.subfolders[folderName];
+            }
+        }
+
+        // Function to list the contents of the current directory
+        function ls() {
+            const currentFolder = fileSystem.folders[fileSystem.currentDirectory];
+            return {
+                subfolders: Object.keys(currentFolder.subfolders),
+                textFiles: currentFolder.textFiles,
+                imageFiles: currentFolder.imageFiles,
+            };
+        }
+
+        // Function to display a list of available commands
+        function help() {
+            return Object.keys(commandDescriptions).join(', ');
+        }
+
+        // Command descriptions
+        const commandDescriptions = {
+            'ls': 'List files and directories in the current directory.',
+            'cd': 'Change the current working directory.',
+            'touch': 'Create a new text file and append it to the current directory.',
+            'rmdir': 'Remove a folder or subfolder.',
+            'help': 'List all available commands.',
+            // ... (other command descriptions)
+        };
+
+        input.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter') {
+                const command = input.value.trim();
+                input.value = '';
+                output.innerHTML += `<p>> ${command}</p>`;
+                executeCommand(command);
+            }
+        });
+
+        // Function to execute commands
+        function executeCommand(command) {
+            const parts = command.split(' ');
+            const cmd = parts[0];
+            const args = parts.slice(1);
+
+            switch (cmd) {
+                case 'ls':
+                    const contents = ls();
+                    output.innerHTML += `<p>${JSON.stringify(contents)}</p>`;
+                    break;
+                case 'touch':
+                    if (args.length === 1) {
+                        touch(args[0]);
+                        output.innerHTML += `<p>Created a new text file: ${args[0]}</p>`;
+                    } else {
+                        output.innerHTML += `<p class="error">Usage: touch <filename></p>`;
+                    }
+                    break;
+                case 'rmdir':
+                    if (args.length === 1) {
+                        rmdir(args[0]);
+                        output.innerHTML += `<p>Removed folder: ${args[0]}</p>`;
+                    } else {
+                        output.innerHTML += `<p class="error">Usage: rmdir <foldername></p>`;
+                    }
+                    break;
+                case 'help':
+                    output.innerHTML += `<p>Available commands: ${help()}</p>`;
+                    break;
+                default:
+                    if (commandDescriptions.hasOwnProperty(cmd)) {
+                        output.innerHTML += `<p>${commandDescriptions[cmd]}</p>`;
+                    } else {
+                        output.innerHTML += `<p class="error">Command not found: ${cmd}</p>`;
+                    }
+            }
+        }
+    </script>
+</body>
+
+</html>

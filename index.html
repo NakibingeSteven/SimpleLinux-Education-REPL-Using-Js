@@ -10,6 +10,25 @@
         <div class="output" id="output"></div>
         <input type="text" id="input" class="input" autofocus>
     </div>
-    <script src="script.js"></script>
+    <script>
+        const input = document.getElementById('input');
+const output = document.getElementById('output');
+
+input.addEventListener('keydown', function (e) {
+    if (e.key === 'Enter') {
+        const command = input.value;
+        input.value = '';
+        output.innerHTML += `<p>> ${command}</p>`;
+        
+        try {
+            const result = eval(command);
+            output.innerHTML += `<p>${result}</p>`;
+        } catch (error) {
+            output.innerHTML += `<p class="error">${error.message}</p>`;
+        }
+    }
+});
+
+    </script>
 </body>
 </html>

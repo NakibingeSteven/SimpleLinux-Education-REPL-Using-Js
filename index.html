@@ -17,20 +17,67 @@
         const input = document.getElementById('input');
         const output = document.getElementById('output');
 
+        // Create a dictionary (object) to store command descriptions.
+        const commandDescriptions = {
+            'ls': 'List files and directories in the current directory.',
+            'cd': 'Change the current working directory.',
+            'pwd': 'Print the current working directory.',
+            'mkdir': 'Create a new directory.',
+            'rmdir': 'Remove an empty directory.',
+            'rm': 'Remove files or directories.',
+            'touch': 'Create an empty file.',
+            'cp': 'Copy files or directories.',
+            'mv': 'Move or rename files and directories.',
+            'cat': 'Concatenate and display file content.',
+            'more': 'View file content one screen at a time.',
+            'less': 'View file content one screen at a time.',
+            'head': 'Display the beginning of a file.',
+            'tail': 'Display the end of a file.',
+            'grep': 'Search for text patterns in files.',
+            'find': 'Search for files and directories.',
+            'ps': 'List running processes.',
+            'kill': 'Terminate processes.',
+            'top': 'Display system resource usage.',
+            'htop': 'Display system resource usage (alternative to top).',
+            'df': 'Display disk space usage.',
+            'du': 'Display file and directory space usage.',
+            'tar': 'Archive files and directories.',
+            'gzip': 'Compress files.',
+            'gunzip': 'Decompress files.',
+            'ssh': 'Securely connect to remote servers.',
+            'scp': 'Securely copy files between local and remote systems.',
+            'wget': 'Download files from the internet.',
+            'ping': 'Test network connectivity.',
+            'ifconfig': 'Configure network interfaces.',
+            'ip': 'Configure network interfaces.',
+            'sudo': 'Execute commands with superuser privileges.',
+            'useradd': 'Add user accounts.',
+            'userdel': 'Remove user accounts.',
+            'passwd': 'Change user passwords.',
+            'chmod': 'Change file permissions.',
+            'chown': 'Change file ownership.',
+            'history': 'View command history.',
+            'alias': 'Create custom command shortcuts.',
+            'cron': 'Schedule tasks to run at specific times.',
+            'shutdown': 'Power off the system.',
+            'reboot': 'Restart the system.',
+        };
+
         input.addEventListener('keydown', function (e) {
             if (e.key === 'Enter') {
-                const command = input.value;
+                const command = input.value.trim();
                 input.value = '';
-                output.innerHTML += `<p>> ${command}</p>`;
 
-                try {
-                    const result = eval(command);
-                    output.innerHTML += `<p>${result}</p>`;
-                } catch (error) {
-                    output.innerHTML += `<p class="error">${error.message}</p>`;
+                if (commandDescriptions.hasOwnProperty(command)) {
+                    const description = commandDescriptions[command];
+                    output.innerHTML += `<p>> ${command}</p>`;
+                    output.innerHTML += `<p>${description}</p>`;
+                } else {
+                    output.innerHTML += `<p class="error">Command not found: ${command}</p>`;
                 }
             }
         });
+
 
     </script>
 </body>

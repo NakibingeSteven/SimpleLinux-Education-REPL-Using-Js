@@ -6,6 +6,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Linux Command REPL</title>
     <link rel="stylesheet" href="style.css">
+    <style>
+        .output-line {
+            font-family: monospace;
+            color: white;
+        }
+
+        .error-line {
+            font-family: monospace;
+            color: red;
+        }
+    </style>
 </head>
 
 <body>
@@ -29,50 +40,47 @@
             },
         };
 
-        // Function to create a new text file
-        function touch(fileName) {
+        // Function to create a new directory
+        function mkdir(directoryName) {
             const currentFolder = fileSystem.folders[fileSystem.currentDirectory];
-            currentFolder.textFiles.push(fileName);
-        }
-
-        // Function to remove a folder or subfolder
-        function rmdir(folderName) {
-            const currentFolder = fileSystem.folders[fileSystem.currentDirectory];
-            if (currentFolder.subfolders.hasOwnProperty(folderName)) {
-                delete currentFolder.subfolders[folderName];
+            if (!currentFolder.subfolders.hasOwnProperty(directoryName)) {
+                currentFolder.subfolders[directoryName] = {
+                    subfolders: {},
+                    textFiles: [],
+                    imageFiles: [],
+                };
             }
         }
 
-        // Function to list the contents of the current directory
-        function ls() {
+        // Function to copy files or directories (cp)
+        function copy(source, destination) {
+            // Implement the logic to copy files or directories
+        }
+
+        // Function to move or rename files or directories (mv)
+        function move(source, destination) {
+            // Implement the logic to move or rename files or directories
+        }
+
+        // Function to concatenate and display file content (cat)
+        function cat(fileName) {
             const currentFolder = fileSystem.folders[fileSystem.currentDirectory];
-            return {
-                subfolders: Object.keys(currentFolder.subfolders),
-                textFiles: currentFolder.textFiles,
-                imageFiles: currentFolder.imageFiles,
-            };
+            if (currentFolder.textFiles.includes(fileName)) {
+                // Implement code to display the content of the specified file
+            } else {
+                output.innerHTML += `<p class="error-line">cat: ${fileName}: No such file or directory</p>`;
+            }
         }
 
-        // Function to display a list of available commands
-        function help() {
-            return Object.keys(commandDescriptions).join(', ');
+        // Function to view file content one screen at a time (more or less)
+        function viewFile(fileName) {
+            // Implement code to view file content one screen at a time
         }
-
-        // Command descriptions
-        const commandDescriptions = {
-            'ls': 'List files and directories in the current directory.',
-            'cd': 'Change the current working directory.',
-            'touch': 'Create a new text file and append it to the current directory.',
-            'rmdir': 'Remove a folder or subfolder.',
-            'help': 'List all available commands.',
-            // ... (other command descriptions)
-        };
 
         input.addEventListener('keydown', function (e) {
             if (e.key === 'Enter') {
                 const command = input.value.trim();
                 input.value = '';
-                output.innerHTML += `<p>> ${command}</p>`;
                 executeCommand(command);
             }
         });
@@ -84,35 +92,47 @@
             const args = parts.slice(1);
 
             switch (cmd) {
-                case 'ls':
-                    const contents = ls();
-                    output.innerHTML += `<p>${JSON.stringify(contents)}</p>`;
-                    break;
-                case 'touch':
+                case 'mkdir':
                     if (args.length === 1) {
-                        touch(args[0]);
-                        output.innerHTML += `<p>Created a new text file: ${args[0]}</p>`;
+                        mkdir(args[0]);
+                        output.innerHTML += `<p class="output-line">Directory created: ${args[0]}</p>`;
                     } else {
-                        output.innerHTML += `<p class="error">Usage: touch <filename></p>`;
+                        output.innerHTML += `<p class="error-line">mkdir: missing operand</p>`;
                     }
                     break;
-                case 'rmdir':
-                    if (args.length === 1) {
-                        rmdir(args[0]);
-                        output.innerHTML += `<p>Removed folder: ${args[0]}</p>`;
+                case 'cp':
+                    if (args.length === 2) {
+                        copy(args[0], args[1]);
+                        output.innerHTML += `<p class="output-line">Copied: ${args[0]} to ${args[1]}</p>`;
                     } else {
-                        output.innerHTML += `<p class="error">Usage: rmdir <foldername></p>`;
+                        output.innerHTML += `<p class="error-line">cp: missing file operand</p>`;
                     }
                     break;
-                case 'help':
-                    output.innerHTML += `<p>Available commands: ${help()}</p>`;
+                case 'mv':
+                    if (args.length === 2) {
+                        move(args[0], args[1]);
+                        output.innerHTML += `<p class="output-line">Moved: ${args[0]} to ${args[1]}</p>`;
+                    } else {
+                        output.innerHTML += `<p class="error-line">mv: missing file operand</p>`;
+                    }
+                    break;
+                case 'cat':
+                    if (args.length === 1) {
+                        cat(args[0]);
+                    } else {
+                        output.innerHTML += `<p class="error-line">cat: missing file operand</p>`;
+                    }
+                    break;
+                case 'more':
+                case 'less':
+                    if (args.length === 1) {
+                        viewFile(args[0]);
+                    } else {
+                        output.innerHTML += `<p class="error-line">${cmd}: missing file operand</p>`;
+                    }
                     break;
                 default:
-                    if (commandDescriptions.hasOwnProperty(cmd)) {
-                        output.innerHTML += `<p>${commandDescriptions[cmd]}</p>`;
-                    } else {
-                        output.innerHTML += `<p class="error">Command not found: ${cmd}</p>`;
-                    }
+                    output.innerHTML += `<p class="error-line">${cmd}: command not found</p>`;
             }
         }
     </script>
